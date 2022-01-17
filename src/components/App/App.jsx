@@ -17,18 +17,23 @@ export default class App extends Component {
     filter: "",
   };
 
-  componentDidMount() {
-    const savedContacts = localStorage.getItem("contacts");
-    const parsedSavedContacts = JSON.parse(savedContacts);
+  #localstorageContacts = "contacts";
 
-    if (parsedSavedContacts) {
-      this.setState({ contacts: parsedSavedContacts });
+  componentDidMount() {
+    const savedContacts = localStorage.getItem(this.#localstorageContacts);
+    const contacts = JSON.parse(savedContacts);
+
+    if (contacts) {
+      this.setState({ contacts });
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.contacts !== prevState) {
-      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
+      localStorage.setItem(
+        this.#localstorageContacts,
+        JSON.stringify(this.state.contacts)
+      );
     }
   }
 
@@ -51,17 +56,16 @@ export default class App extends Component {
     }));
   };
 
-  handleFilter = (e) => {
-    const filterValue = e.currentTarget.value;
-    this.setState({ filter: filterValue });
+  handleFilter = ({ currentTarget }) => {
+    const filter = currentTarget.value;
+    this.setState({ filter });
   };
 
   filterContacts = (data) => {
     const { filter } = this.state;
-    const filteredContactsList = data.filter((contact) =>
+    return data.filter((contact) =>
       contact.name.toLowerCase().includes(filter)
     );
-    return filteredContactsList;
   };
 
   deleteContact = (id) => {
